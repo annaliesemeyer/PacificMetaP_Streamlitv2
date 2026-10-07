@@ -377,7 +377,7 @@ with col1:
     st.plotly_chart(fig,use_container_width=False)
 with col2:
     st.markdown('The bubbles on this map show the relative amount of '+ str(protselect) + ' from any organism in the '+str(sizefract)+' size fraction at each station along the transect. Hover over each point for the station name and the fractional contribution of that protein to the total number of proteins detected at that station.')
-    st.markdown('The predicted functional role of '+str(protselect)+' is '+str(taxa_filled_small[taxa_filled_small['protname']==protselect]['Description']) + '.')
+    st.markdown('The predicted functional role of '+str(protselect)+' is '+str(taxa_filled_small[taxa_filled_small['protname']==protselect]['Description'][0]) + '.')
 
 
 toplot = taxa_filled_small[taxa_filled_small['protname'].str.contains(protselect)] #ko:K16087, ko:K16091, ko:K09815,ko:K02077,ko:K11959
