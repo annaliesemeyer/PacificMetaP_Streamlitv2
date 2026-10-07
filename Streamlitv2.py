@@ -74,7 +74,7 @@ sizefract = st.sidebar.radio('Size Fraction:',['0.2–3 µm', '3–51 µm'],inde
 
 @st.cache_data(ttl=3600)
 def picksize(sizef):
-    if sizef =='0.2–3 µm':
+   if sizef =='0.2–3 µm':
         stn = pd.read_csv('GP15-17-OCE_stns.txt', sep='\t', encoding='latin-1')
         stn_names = pd.read_csv(r'Stn_Names_comma.csv')
         stn_ID = stn_names.Stn.astype(str)
