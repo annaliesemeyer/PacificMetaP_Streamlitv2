@@ -369,7 +369,7 @@ taxa_filled_small['kegg_ID'] = taxa_filled['function_mapping']
 taxa_filled_small['Description'] = taxa_filled['Description_y']
 taxa_filled_small[['Domain', 'Supergroup', 'Phylum', 'Class','Order','Family','Genus','Species']] = taxa_filled[['domain','clade1','clade2','clade3','clade4','clade5','genus','species']]
 taxa_filled_small = taxa_filled_small.fillna('Other')
-taxa_filled_small[stn_ID] = taxa_filled[stn_ID]
+taxa_filled_small[stn_ID] = taxa_filled[stn_ID]/1.70465E+12
 
 
 col1, col2 = st.columns(2)
@@ -377,7 +377,7 @@ with col1:
     st.plotly_chart(fig,use_container_width=False)
 with col2:
     st.markdown('The bubbles on this map show the relative amount of '+ str(protselect) + ' from any organism in the '+str(sizefract)+' size fraction at each station along the transect. Hover over each point for the station name and the fractional contribution of that protein to the total number of proteins detected at that station.')
-    st.markdown('The predicted functional role of '+str(protselect)+' is '+str(taxa_filled_small['Description'][0]) + '.')
+    st.markdown('The predicted functional role of '+str(protselect)+' is '+str(taxa_filled_small[taxa_filled_small['protname']==protselect]['Description']) + '.')
 
 
 toplot = taxa_filled_small[taxa_filled_small['protname'].str.contains(protselect)] #ko:K16087, ko:K16091, ko:K09815,ko:K02077,ko:K11959
