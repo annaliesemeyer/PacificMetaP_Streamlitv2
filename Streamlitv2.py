@@ -117,7 +117,7 @@ taxa_domain_summed, taxa_clade1_summed, taxa_clade2_summed, taxa_clade3_summed, 
 st.markdown('# Pacific Metaproteomics Surface Transect')
 st.markdown('#### Created by Annaliese Meyer')
 st.markdown('Contact: acsmeyer@alum.mit.edu')
-st.markdown('These samples were collected as part of the GEOTRACES GP15 and GP17-OCE cruises. All data are presented as normalized intensities. Samples were collected for 0.2–3 µm and a 3–51 µm size fractions. You can select your size fraction of interest in the sidebar.')
+st.markdown('These samples were collected as part of the GEOTRACES GP15 and GP17-OCE cruises. All data are presented as normalized intensities. Samples were collected for 0.2–3 µm and 3–51 µm size fractions. You can select your size fraction of interest in the sidebar.')
 st.markdown('These data are to be used for educational purposes only.')
 
 @st.cache_resource
@@ -446,13 +446,13 @@ if options == 'Protein Name':
     
     #target
     data = taxa_protname_summed#.groupby(taxa_protname_summed['protname'])
-    
+    data['divsum'] = data['sum']/1.70465E+12
     data1 = data[data['protname'].str.contains(target)]
     
     data2 = data1.groupby("stn").agg(
         lat = pd.NamedAgg(column="lat", aggfunc="min"),
         lon = pd.NamedAgg(column="lon", aggfunc="min"),
-        summed = pd.NamedAgg(column="sum", aggfunc="sum"),
+        summed = pd.NamedAgg(column="divsum", aggfunc="sum"),
         station = pd.NamedAgg(column="stn", aggfunc="min"),
         param_group = pd.NamedAgg(column="protname", aggfunc="sum")
     )
@@ -463,13 +463,13 @@ if options == 'Protein Name':
     
     #target2
     dataa = taxa_protname_summed#.groupby(taxa_protname_summed['protname'])
-    
+    dataa['divsum'] = dataa['sum']/1.70465E+12
     datab = dataa[dataa['protname'].str.contains(target2)]
     
     datac = datab.groupby("stn").agg(
         lat = pd.NamedAgg(column="lat", aggfunc="min"),
         lon = pd.NamedAgg(column="lon", aggfunc="min"),
-        summed = pd.NamedAgg(column="sum", aggfunc="sum"),
+        summed = pd.NamedAgg(column="divsum", aggfunc="sum"),
         station = pd.NamedAgg(column="stn", aggfunc="min"),
         param_group = pd.NamedAgg(column="protname", aggfunc="sum")
     )
@@ -665,13 +665,13 @@ if options == 'KEGG Ortholog':
     
     #target
     data = taxa_kegg_summed#.groupby(taxa_protname_summed['protname'])
-    
+    data['divsum'] = data['sum']/1.70465E+12
     data1 = data[data['kegg'].str.contains(target)]
     
     data2 = data1.groupby("stn").agg(
         lat = pd.NamedAgg(column="lat", aggfunc="min"),
         lon = pd.NamedAgg(column="lon", aggfunc="min"),
-        summed = pd.NamedAgg(column="sum", aggfunc="sum"),
+        summed = pd.NamedAgg(column="divsum", aggfunc="sum"),
         station = pd.NamedAgg(column="stn", aggfunc="min"),
         param_group = pd.NamedAgg(column="kegg", aggfunc="sum")
     )
@@ -682,13 +682,13 @@ if options == 'KEGG Ortholog':
     
     #target2
     dataa = taxa_kegg_summed#.groupby(taxa_protname_summed['protname'])
-    
+    dataa['divsum'] = dataa['sum']/1.70465E+12
     datab = dataa[dataa['kegg'].str.contains(target2)]
     
     datac = datab.groupby("stn").agg(
         lat = pd.NamedAgg(column="lat", aggfunc="min"),
         lon = pd.NamedAgg(column="lon", aggfunc="min"),
-        summed = pd.NamedAgg(column="sum", aggfunc="sum"),
+        summed = pd.NamedAgg(column="divsum", aggfunc="sum"),
         station = pd.NamedAgg(column="stn", aggfunc="min"),
         param_group = pd.NamedAgg(column="kegg", aggfunc="sum")
     )
