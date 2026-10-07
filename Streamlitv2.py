@@ -298,227 +298,443 @@ Acid Phosphatase	| Acid phosphatase
 
 st.markdown('## Functional Distribution')
 
-protselect = st.selectbox('Select a protein or enter your own:',['fecA', 'cobW','irpA','metE','metH','ureC','urtA','ftsH','btuB'],accept_new_options=True, index = 0)
-st.markdown('_Protein names are case sensitive._')
+options = st..radio('Search:',['KEGG Ortholog', 'Protein Name'],index = 0)
 
-if st.checkbox('Protein Markers Reference'):
-    st.markdown('### Nutrient Stress Protein Markers')
-    
-    col1,col2 = st.columns(2)
-    with col1:
-        st.markdown(markersinfo)
-    with col2: 
-        st.markdown(markersinfo2)
-    
-data = taxa_protname_summed#.groupby(taxa_protname_summed['protname'])
-
-#data = data.get_group('fecA')
-
-data1 = data[data['protname'].str.contains(protselect)]
-
-data2 = data1.groupby("stn").agg(
-    lat = pd.NamedAgg(column="lat", aggfunc="min"),
-    lon = pd.NamedAgg(column="lon", aggfunc="min"),
-    summed = pd.NamedAgg(column="sum", aggfunc="sum"),
-    stn = pd.NamedAgg(column="stn", aggfunc="min"),
-    param_group = pd.NamedAgg(column="protname", aggfunc="sum")
-)
-
-
-fig = px.scatter_map(data2, lat = 'lat', lon = 'lon', color = 'summed',
-                     hover_name="stn", size="summed",size_max = 30,color_continuous_scale="GnBu",opacity = 0.9)
-
-#fig = px.scatter_mapbox(data, lat = 'lat', lon = 'lon', color = "sum",
-#                     hover_name="stn", size="sum",size_max = 30,color_continuous_scale="YlOrRd", opacity = 1)
-#fig.update_geos(fitbounds="locations")
-
-#zoom 4, height 4000, width 1400 for print, size max 40
-
-fig.update_layout(height=900, width = 600)
-fig.update_layout(coloraxis_colorbar_title_text = '% per station')
-fig.update_layout(
-    autosize=False,
-    hovermode='closest',
-    map=dict(
-        bearing=0,
-        pitch=0,
-        zoom=0,
-        bounds=dict(
-        west=-170,
-        south=-70,
-        east=-49,
-        north=63),
-        style="carto-darkmatter",
-        
-    ))
-fig.update_layout(
-    font_family="Arial", font_size = 14, font_color = 'black')
-
-fig.update_coloraxes(showscale=False)
-fig.update_layout(
-    paper_bgcolor='indigo',
-    margin=dict(pad=0, r=2, t=2, b=2, l=2)
-)
-
-
-taxa_filled_small = taxa_filled[['Protein']] 
-
-taxa_filled_small['protname'] = taxa_filled['Preferred_name']
-taxa_filled_small['kegg_ID'] = taxa_filled['function_mapping']
-
-taxa_filled_small['Description'] = taxa_filled['Description_y']
-taxa_filled_small[['Domain', 'Supergroup', 'Phylum', 'Class','Order','Family','Genus','Species']] = taxa_filled[['domain','clade1','clade2','clade3','clade4','clade5','genus','species']]
-taxa_filled_small = taxa_filled_small.fillna('Other')
-taxa_filled_small[stn_ID] = taxa_filled[stn_ID]/1.70465E+12
-
-
-col1, col2 = st.columns(2)
-with col1:
-    st.plotly_chart(fig,use_container_width=False)
-with col2:
-    st.markdown('The bubbles on this map show the relative amount of '+ str(protselect) + ' from any organism in the '+str(sizefract)+' size fraction at each station along the transect. Hover over each point for the station name and the fractional contribution of that protein to the total number of proteins detected at that station.')
-    st.markdown('The predicted functional role of '+str(protselect)+' is '+str(taxa_filled_small[taxa_filled_small['protname']==protselect]['Description'].iloc[0]) + '.')
-
-
-toplot = taxa_filled_small[taxa_filled_small['protname'].str.contains(protselect)] #ko:K16087, ko:K16091, ko:K09815,ko:K02077,ko:K11959
-maxval = toplot[stn_ID].max().max()
-xlabels = stn_keys
-fig = plt.figure(figsize = (8, 3))
-fig.patch.set_facecolor('black')
-cmap = ListedColormap(['#01ff07','#fe01b1','#ff9408','#a9561e','#490648','#aa23ff','#13bbaf','#247afd','#ec2d01','#3f9b0b', 'gray','tan','palegreen'])
-
-ax = plt.subplot()
-ax.set_box_aspect(1/3)
-ax.patch.set_facecolor('black')
-ax.set_title(str(protselect), color = "white", size = 9, loc = 'left')
-ax = pd.plotting.parallel_coordinates(toplot, cols = stn_ID, class_column = optiontax, colormap = cmap, axvlines = False, linewidth = 0.5)#color=toplot.colours)
-ax.set_ylim([0,maxval])
-ax.spines['top'].set_color("palegreen")
-ax.spines['bottom'].set_color("palegreen")
-ax.spines['left'].set_color("palegreen")
-ax.spines['right'].set_color("palegreen")
-ax.tick_params(axis='x', colors="#e8e8e8", labelsize = 5, size = 0)
-ax.tick_params(axis='y', colors="palegreen", labelsize = 6, size = 0)
-ax.grid(False)
-ax.vlines(range(0,len(xlabels)),ymin = 0, ymax = maxval,color = "#e8e8e8", zorder = 0, alpha = 0.5, linewidth = 0.3)
-with io.capture_output() as captured:
-    ax.set_xticklabels(xlabels)
-ax.set_xlabel('Station', color = 'white', size = 6)
-ax.get_legend().remove()
-fig.legend(bbox_to_anchor=(0.91, 0.8), loc='upper left',frameon = False, framealpha = 1, fontsize = 4.5, facecolor='k', labelcolor ='#e8e8e8', draggable = True, edgecolor = 'palegreen')
-#fig.legend(loc='outside right center', frameon = True, framealpha = 1, fontsize = 4, facecolor='k', labelcolor ='#e8e8e8', draggable = True, edgecolor = 'palegreen')
-#plt.text(0.1,0.1,str(protselect),size = 15, weight ='bold')
-ax.ticklabel_format(scilimits=(0,0), axis = 'y')
-
-#st.pyplot(fig, width = 'stretch')
-fig.savefig('lines.svg', format="svg", bbox_inches = "tight")
-#st.pdf('lines.pdf', height = 'stretch')
-
-st.markdown('   ')
-st.markdown('This plot shows the fractional abundance of '+str(protselect)+' in the ' + str(sizefract)+' size fraction across the transect. Each individual line corresponds to a distinct version of the detected protein from a specific species. The line colours correspond with your selected taxonomic rank, '+str(optiontax)+'.')
-
-st.image('lines.svg', width = 'stretch',output_format="PNG")
-
-
-##########################
-
-
-
-
-
-
-
-
-##########################################
-st.markdown('#### Protein Comparisons')
-#compare proteins
-col1, col2 = st.columns(2)
-
-with col1:
-    st.markdown('Target Protein 1')
-    target = st.selectbox('Select protein 1 from dropdown or enter your own:',['fecA', 'cobW','irpA','metE','metH','ureC','urtA','ftsH','btuB'],accept_new_options=True, index = 3)
+if options == 'Protein Name':
+    protselect = st.selectbox('Select a protein or enter your own:',['fecA', 'cobW','irpA','metE','metH','ureC','urtA','ftsH','btuB'],accept_new_options=True, index = 0)
     st.markdown('_Protein names are case sensitive._')
-
-with col2:
-    st.markdown('Target Protein 2')
-    target2 = st.selectbox('Select protein 2 from dropdown or enter your own:',['fecA', 'cobW','irpA','metE','metH','ureC','urtA','ftsH','btuB'],accept_new_options=True, index = 4)
-
-
-params = {'mathtext.default': 'regular' }          
-plt.rcParams.update(params)
-
-#target
-data = taxa_protname_summed#.groupby(taxa_protname_summed['protname'])
-
-data1 = data[data['protname'].str.contains(target)]
-
-data2 = data1.groupby("stn").agg(
-    lat = pd.NamedAgg(column="lat", aggfunc="min"),
-    lon = pd.NamedAgg(column="lon", aggfunc="min"),
-    summed = pd.NamedAgg(column="sum", aggfunc="sum"),
-    station = pd.NamedAgg(column="stn", aggfunc="min"),
-    param_group = pd.NamedAgg(column="protname", aggfunc="sum")
-)
-
-datagroup1 = data2.groupby('station')
-
-
-
-#target2
-dataa = taxa_protname_summed#.groupby(taxa_protname_summed['protname'])
-
-datab = dataa[dataa['protname'].str.contains(target2)]
-
-datac = datab.groupby("stn").agg(
-    lat = pd.NamedAgg(column="lat", aggfunc="min"),
-    lon = pd.NamedAgg(column="lon", aggfunc="min"),
-    summed = pd.NamedAgg(column="sum", aggfunc="sum"),
-    station = pd.NamedAgg(column="stn", aggfunc="min"),
-    param_group = pd.NamedAgg(column="protname", aggfunc="sum")
-)
-
-datagroupa = datac.groupby('station')
-
-
-fig = plt.figure()
-
-fig.patch.set_facecolor('black')
-ax = plt.subplot()
-#ax.patch.set_alpha(0.0)
-ax.patch.set_facecolor('black')
-
-for n, k in enumerate(datagroup1.groups.keys()):
-    datagroup2 = datagroup1.get_group(k)
-    datagroupb = datagroupa.get_group(k)
-
-
-    c = ax.scatter(datagroupb['summed'],datagroup2['summed'],c = datagroup2.lat, clim = (-67,60), s = 60, alpha = 1, cmap = 'GnBu', edgecolor = 'white')
-
-
-cbar = plt.colorbar(c)
-cbar.ax.tick_params(which='both', color='white', labelcolor='white')
-cbar.ax.set_ylabel('Latitude (˚N)', color = 'white')
-ax.grid()
-ax.ticklabel_format(scilimits=(0,0), axis = 'both')
-#ax.set_xlim(-0.5,100)
-#ax.loglog()
-ax.set_ylabel('$F_{protein 2}$', color = 'palegreen', size = 10)
-ax.set_xlabel('$F_{protein 1}$',color = 'palegreen', size = 10)
-ax.spines['top'].set_color("palegreen")
-ax.spines['bottom'].set_color("palegreen")
-ax.spines['left'].set_color("palegreen")
-ax.spines['right'].set_color("palegreen")
-ax.tick_params(axis='y', colors="palegreen", labelsize = 10)
-ax.tick_params(axis='x', colors="palegreen", labelsize =10)
-
-fig.savefig('comps.svg', format="svg", bbox_inches = "tight")
-#st.pdf('comps.pdf', height = 'stretch')
-
-col1, col2 = st.columns(2)
-
-with col1:
     
-    st.image('comps.svg', width = 'stretch',output_format="PNG")
+    if st.checkbox('Protein Markers Reference'):
+        st.markdown('### Nutrient Stress Protein Markers')
+        
+        col1,col2 = st.columns(2)
+        with col1:
+            st.markdown(markersinfo)
+        with col2: 
+            st.markdown(markersinfo2)
+        
+    data = taxa_protname_summed#.groupby(taxa_protname_summed['protname'])
+    
+    #data = data.get_group('fecA')
+    
+    data1 = data[data['protname'].str.contains(protselect)]
+    
+    data2 = data1.groupby("stn").agg(
+        lat = pd.NamedAgg(column="lat", aggfunc="min"),
+        lon = pd.NamedAgg(column="lon", aggfunc="min"),
+        summed = pd.NamedAgg(column="sum", aggfunc="sum"),
+        stn = pd.NamedAgg(column="stn", aggfunc="min"),
+        param_group = pd.NamedAgg(column="protname", aggfunc="sum")
+    )
+    
+    
+    fig = px.scatter_map(data2, lat = 'lat', lon = 'lon', color = 'summed',
+                         hover_name="stn", size="summed",size_max = 30,color_continuous_scale="GnBu",opacity = 0.9)
+    
+    #fig = px.scatter_mapbox(data, lat = 'lat', lon = 'lon', color = "sum",
+    #                     hover_name="stn", size="sum",size_max = 30,color_continuous_scale="YlOrRd", opacity = 1)
+    #fig.update_geos(fitbounds="locations")
+    
+    #zoom 4, height 4000, width 1400 for print, size max 40
+    
+    fig.update_layout(height=900, width = 600)
+    fig.update_layout(coloraxis_colorbar_title_text = '% per station')
+    fig.update_layout(
+        autosize=False,
+        hovermode='closest',
+        map=dict(
+            bearing=0,
+            pitch=0,
+            zoom=0,
+            bounds=dict(
+            west=-170,
+            south=-70,
+            east=-49,
+            north=63),
+            style="carto-darkmatter",
+            
+        ))
+    fig.update_layout(
+        font_family="Arial", font_size = 14, font_color = 'black')
+    
+    fig.update_coloraxes(showscale=False)
+    fig.update_layout(
+        paper_bgcolor='indigo',
+        margin=dict(pad=0, r=2, t=2, b=2, l=2)
+    )
+    
+    
+    taxa_filled_small = taxa_filled[['Protein']] 
+    
+    taxa_filled_small['protname'] = taxa_filled['Preferred_name']
+    taxa_filled_small['kegg_ID'] = taxa_filled['function_mapping']
+    
+    taxa_filled_small['Description'] = taxa_filled['Description_y']
+    taxa_filled_small[['Domain', 'Supergroup', 'Phylum', 'Class','Order','Family','Genus','Species']] = taxa_filled[['domain','clade1','clade2','clade3','clade4','clade5','genus','species']]
+    taxa_filled_small = taxa_filled_small.fillna('Other')
+    taxa_filled_small[stn_ID] = taxa_filled[stn_ID]/1.70465E+12
+    
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.plotly_chart(fig,use_container_width=False)
+    with col2:
+        st.markdown('The bubbles on this map show the relative amount of '+ str(protselect) + ' from any organism in the '+str(sizefract)+' size fraction at each station along the transect. Hover over each point for the station name and the fractional contribution of that protein to the total number of proteins detected at that station.')
+        st.markdown('The predicted functional role of '+str(protselect)+' is '+str(taxa_filled_small[taxa_filled_small['protname']==protselect]['Description'].iloc[0]) + '.')
+    
+    
+    toplot = taxa_filled_small[taxa_filled_small['protname'].str.contains(protselect)] #ko:K16087, ko:K16091, ko:K09815,ko:K02077,ko:K11959
+    maxval = toplot[stn_ID].max().max()
+    xlabels = stn_keys
+    fig = plt.figure(figsize = (8, 3))
+    fig.patch.set_facecolor('black')
+    cmap = ListedColormap(['#01ff07','#fe01b1','#ff9408','#a9561e','#490648','#aa23ff','#13bbaf','#247afd','#ec2d01','#3f9b0b', 'gray','tan','palegreen'])
+    
+    ax = plt.subplot()
+    ax.set_box_aspect(1/3)
+    ax.patch.set_facecolor('black')
+    ax.set_title(str(protselect), color = "white", size = 9, loc = 'left')
+    ax = pd.plotting.parallel_coordinates(toplot, cols = stn_ID, class_column = optiontax, colormap = cmap, axvlines = False, linewidth = 0.5)#color=toplot.colours)
+    ax.set_ylim([0,maxval])
+    ax.spines['top'].set_color("palegreen")
+    ax.spines['bottom'].set_color("palegreen")
+    ax.spines['left'].set_color("palegreen")
+    ax.spines['right'].set_color("palegreen")
+    ax.tick_params(axis='x', colors="#e8e8e8", labelsize = 5, size = 0)
+    ax.tick_params(axis='y', colors="palegreen", labelsize = 6, size = 0)
+    ax.grid(False)
+    ax.vlines(range(0,len(xlabels)),ymin = 0, ymax = maxval,color = "#e8e8e8", zorder = 0, alpha = 0.5, linewidth = 0.3)
+    with io.capture_output() as captured:
+        ax.set_xticklabels(xlabels)
+    ax.set_xlabel('Station', color = 'white', size = 6)
+    ax.get_legend().remove()
+    fig.legend(bbox_to_anchor=(0.91, 0.8), loc='upper left',frameon = False, framealpha = 1, fontsize = 4.5, facecolor='k', labelcolor ='#e8e8e8', draggable = True, edgecolor = 'palegreen')
+    #fig.legend(loc='outside right center', frameon = True, framealpha = 1, fontsize = 4, facecolor='k', labelcolor ='#e8e8e8', draggable = True, edgecolor = 'palegreen')
+    #plt.text(0.1,0.1,str(protselect),size = 15, weight ='bold')
+    ax.ticklabel_format(scilimits=(0,0), axis = 'y')
+    
+    #st.pyplot(fig, width = 'stretch')
+    fig.savefig('lines.svg', format="svg", bbox_inches = "tight")
+    #st.pdf('lines.pdf', height = 'stretch')
+    
+    st.markdown('   ')
+    st.markdown('This plot shows the fractional abundance of '+str(protselect)+' in the ' + str(sizefract)+' size fraction across the transect. Each individual line corresponds to a distinct version of the detected protein from a specific species. The line colours correspond with your selected taxonomic rank, '+str(optiontax)+'.')
+    
+    st.image('lines.svg', width = 'stretch',output_format="PNG")
+    
+    
+    ##########################
+    
+    
+    ##########################################
+    st.markdown('#### Protein Comparisons')
+    #compare proteins
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown('Target Protein 1')
+        target = st.selectbox('Select protein 1 from dropdown or enter your own:',['fecA', 'cobW','irpA','metE','metH','ureC','urtA','ftsH','btuB'],accept_new_options=True, index = 3)
+        st.markdown('_Protein names are case sensitive._')
+    
+    with col2:
+        st.markdown('Target Protein 2')
+        target2 = st.selectbox('Select protein 2 from dropdown or enter your own:',['fecA', 'cobW','irpA','metE','metH','ureC','urtA','ftsH','btuB'],accept_new_options=True, index = 4)
+    
+    
+    params = {'mathtext.default': 'regular' }          
+    plt.rcParams.update(params)
+    
+    #target
+    data = taxa_protname_summed#.groupby(taxa_protname_summed['protname'])
+    
+    data1 = data[data['protname'].str.contains(target)]
+    
+    data2 = data1.groupby("stn").agg(
+        lat = pd.NamedAgg(column="lat", aggfunc="min"),
+        lon = pd.NamedAgg(column="lon", aggfunc="min"),
+        summed = pd.NamedAgg(column="sum", aggfunc="sum"),
+        station = pd.NamedAgg(column="stn", aggfunc="min"),
+        param_group = pd.NamedAgg(column="protname", aggfunc="sum")
+    )
+    
+    datagroup1 = data2.groupby('station')
+    
+    
+    
+    #target2
+    dataa = taxa_protname_summed#.groupby(taxa_protname_summed['protname'])
+    
+    datab = dataa[dataa['protname'].str.contains(target2)]
+    
+    datac = datab.groupby("stn").agg(
+        lat = pd.NamedAgg(column="lat", aggfunc="min"),
+        lon = pd.NamedAgg(column="lon", aggfunc="min"),
+        summed = pd.NamedAgg(column="sum", aggfunc="sum"),
+        station = pd.NamedAgg(column="stn", aggfunc="min"),
+        param_group = pd.NamedAgg(column="protname", aggfunc="sum")
+    )
+    
+    datagroupa = datac.groupby('station')
+    
+    
+    fig = plt.figure()
+    
+    fig.patch.set_facecolor('black')
+    ax = plt.subplot()
+    #ax.patch.set_alpha(0.0)
+    ax.patch.set_facecolor('black')
+    
+    for n, k in enumerate(datagroup1.groups.keys()):
+        datagroup2 = datagroup1.get_group(k)
+        datagroupb = datagroupa.get_group(k)
+    
+    
+        c = ax.scatter(datagroupb['summed'],datagroup2['summed'],c = datagroup2.lat, clim = (-67,60), s = 60, alpha = 1, cmap = 'GnBu', edgecolor = 'white')
+    
+    
+    cbar = plt.colorbar(c)
+    cbar.ax.tick_params(which='both', color='white', labelcolor='white')
+    cbar.ax.set_ylabel('Latitude (˚N)', color = 'white')
+    ax.grid()
+    ax.ticklabel_format(scilimits=(0,0), axis = 'both')
+    #ax.set_xlim(-0.5,100)
+    #ax.loglog()
+    ax.set_ylabel('$F_{protein 2}$', color = 'palegreen', size = 10)
+    ax.set_xlabel('$F_{protein 1}$',color = 'palegreen', size = 10)
+    ax.spines['top'].set_color("palegreen")
+    ax.spines['bottom'].set_color("palegreen")
+    ax.spines['left'].set_color("palegreen")
+    ax.spines['right'].set_color("palegreen")
+    ax.tick_params(axis='y', colors="palegreen", labelsize = 10)
+    ax.tick_params(axis='x', colors="palegreen", labelsize =10)
+    
+    fig.savefig('comps.svg', format="svg", bbox_inches = "tight")
+    #st.pdf('comps.pdf', height = 'stretch')
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        
+        st.image('comps.svg', width = 'stretch',output_format="PNG")
+    
+    with col2:
+        st.markdown('This plot compares the fractional abundance of two proteins in the '+str(sizefract)+' size fraction. The latitude of each associated station is indicated by the marker shading.')
 
-with col2:
-    st.markdown('This plot compares the fractional abundance of two proteins in the '+str(sizefract)+' size fraction. The latitude of each associated station is indicated by the marker shading.')
+
+###############################
+if options == 'KEGG Ortholog':
+    protselect = st.selectbox('Select a KO or enter your own:',['K00549', 'K00548','K11959','K09815','K02077'],accept_new_options=True, index = 0)
+    st.markdown('_KEGG IDs are case sensitive._')
+    
+    data = taxa_kegg_summed#.groupby(taxa_protname_summed['protname'])
+    
+    #data = data.get_group('fecA')
+    
+    data1 = data[data['kegg'].str.contains(protselect)]
+    
+    data2 = data1.groupby("stn").agg(
+        lat = pd.NamedAgg(column="lat", aggfunc="min"),
+        lon = pd.NamedAgg(column="lon", aggfunc="min"),
+        summed = pd.NamedAgg(column="sum", aggfunc="sum"),
+        stn = pd.NamedAgg(column="stn", aggfunc="min"),
+        param_group = pd.NamedAgg(column="kegg", aggfunc="sum")
+    )
+    
+    
+    fig = px.scatter_map(data2, lat = 'lat', lon = 'lon', color = 'summed',
+                         hover_name="stn", size="summed",size_max = 30,color_continuous_scale="GnBu",opacity = 0.9)
+    
+    #fig = px.scatter_mapbox(data, lat = 'lat', lon = 'lon', color = "sum",
+    #                     hover_name="stn", size="sum",size_max = 30,color_continuous_scale="YlOrRd", opacity = 1)
+    #fig.update_geos(fitbounds="locations")
+    
+    #zoom 4, height 4000, width 1400 for print, size max 40
+    
+    fig.update_layout(height=900, width = 600)
+    fig.update_layout(coloraxis_colorbar_title_text = '% per station')
+    fig.update_layout(
+        autosize=False,
+        hovermode='closest',
+        map=dict(
+            bearing=0,
+            pitch=0,
+            zoom=0,
+            bounds=dict(
+            west=-170,
+            south=-70,
+            east=-49,
+            north=63),
+            style="carto-darkmatter",
+            
+        ))
+    fig.update_layout(
+        font_family="Arial", font_size = 14, font_color = 'black')
+    
+    fig.update_coloraxes(showscale=False)
+    fig.update_layout(
+        paper_bgcolor='indigo',
+        margin=dict(pad=0, r=2, t=2, b=2, l=2)
+    )
+    
+    
+    taxa_filled_small = taxa_filled[['Protein']] 
+    
+    taxa_filled_small['protname'] = taxa_filled['Preferred_name']
+    taxa_filled_small['kegg_ID'] = taxa_filled['function_mapping']
+    
+    taxa_filled_small['Description'] = taxa_filled['Description_y']
+    taxa_filled_small[['Domain', 'Supergroup', 'Phylum', 'Class','Order','Family','Genus','Species']] = taxa_filled[['domain','clade1','clade2','clade3','clade4','clade5','genus','species']]
+    taxa_filled_small = taxa_filled_small.fillna('Other')
+    taxa_filled_small[stn_ID] = taxa_filled[stn_ID]/1.70465E+12
+    
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        st.plotly_chart(fig,use_container_width=False)
+    with col2:
+        st.markdown('The bubbles on this map show the relative amount of '+ str(protselect) + ' from any organism in the '+str(sizefract)+' size fraction at each station along the transect. Hover over each point for the station name and the fractional contribution of that protein to the total number of proteins detected at that station.')
+        st.markdown('The predicted functional role of '+str(protselect)+' is '+str(taxa_filled_small[taxa_filled_small['kegg_ID']==protselect]['Description'].iloc[0]) + '.')
+    
+    
+    toplot = taxa_filled_small[taxa_filled_small['kegg_ID'].str.contains(protselect)] #ko:K16087, ko:K16091, ko:K09815,ko:K02077,ko:K11959
+    maxval = toplot[stn_ID].max().max()
+    xlabels = stn_keys
+    fig = plt.figure(figsize = (8, 3))
+    fig.patch.set_facecolor('black')
+    cmap = ListedColormap(['#01ff07','#fe01b1','#ff9408','#a9561e','#490648','#aa23ff','#13bbaf','#247afd','#ec2d01','#3f9b0b', 'gray','tan','palegreen'])
+    
+    ax = plt.subplot()
+    ax.set_box_aspect(1/3)
+    ax.patch.set_facecolor('black')
+    ax.set_title(str(protselect), color = "white", size = 9, loc = 'left')
+    ax = pd.plotting.parallel_coordinates(toplot, cols = stn_ID, class_column = optiontax, colormap = cmap, axvlines = False, linewidth = 0.5)#color=toplot.colours)
+    ax.set_ylim([0,maxval])
+    ax.spines['top'].set_color("palegreen")
+    ax.spines['bottom'].set_color("palegreen")
+    ax.spines['left'].set_color("palegreen")
+    ax.spines['right'].set_color("palegreen")
+    ax.tick_params(axis='x', colors="#e8e8e8", labelsize = 5, size = 0)
+    ax.tick_params(axis='y', colors="palegreen", labelsize = 6, size = 0)
+    ax.grid(False)
+    ax.vlines(range(0,len(xlabels)),ymin = 0, ymax = maxval,color = "#e8e8e8", zorder = 0, alpha = 0.5, linewidth = 0.3)
+    with io.capture_output() as captured:
+        ax.set_xticklabels(xlabels)
+    ax.set_xlabel('Station', color = 'white', size = 6)
+    ax.get_legend().remove()
+    fig.legend(bbox_to_anchor=(0.91, 0.8), loc='upper left',frameon = False, framealpha = 1, fontsize = 4.5, facecolor='k', labelcolor ='#e8e8e8', draggable = True, edgecolor = 'palegreen')
+    #fig.legend(loc='outside right center', frameon = True, framealpha = 1, fontsize = 4, facecolor='k', labelcolor ='#e8e8e8', draggable = True, edgecolor = 'palegreen')
+    #plt.text(0.1,0.1,str(protselect),size = 15, weight ='bold')
+    ax.ticklabel_format(scilimits=(0,0), axis = 'y')
+    
+    #st.pyplot(fig, width = 'stretch')
+    fig.savefig('lines.svg', format="svg", bbox_inches = "tight")
+    #st.pdf('lines.pdf', height = 'stretch')
+    
+    st.markdown('   ')
+    st.markdown('This plot shows the fractional abundance of '+str(protselect)+' in the ' + str(sizefract)+' size fraction across the transect. Each individual line corresponds to a distinct version of the detected protein from a specific species. The line colours correspond with your selected taxonomic rank, '+str(optiontax)+'.')
+    
+    st.image('lines.svg', width = 'stretch',output_format="PNG")
+    
+    
+    ##########################
+    
+    
+    
+    
+    
+    
+    
+    
+    ##########################################
+    st.markdown('#### Protein Comparisons')
+    #compare proteins
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown('Target KEGG Ortholog 1')
+        target = st.selectbox('Select target 1 from dropdown or enter your own:',['K00549', 'K00548','K11959','K09815','K02077'],accept_new_options=True, index = 3)
+        st.markdown('_Protein names are case sensitive._')
+    
+    with col2:
+        st.markdown('Target KEGG Ortholog 2')
+        target2 = st.selectbox('Select target 2 from dropdown or enter your own:',['K00549', 'K00548','K11959','K09815','K02077'],accept_new_options=True, index = 2)
+    
+    
+    params = {'mathtext.default': 'regular' }          
+    plt.rcParams.update(params)
+    
+    #target
+    data = taxa_kegg_summed#.groupby(taxa_protname_summed['protname'])
+    
+    data1 = data[data['kegg'].str.contains(target)]
+    
+    data2 = data1.groupby("stn").agg(
+        lat = pd.NamedAgg(column="lat", aggfunc="min"),
+        lon = pd.NamedAgg(column="lon", aggfunc="min"),
+        summed = pd.NamedAgg(column="sum", aggfunc="sum"),
+        station = pd.NamedAgg(column="stn", aggfunc="min"),
+        param_group = pd.NamedAgg(column="kegg", aggfunc="sum")
+    )
+    
+    datagroup1 = data2.groupby('station')
+    
+    
+    
+    #target2
+    dataa = taxa_kegg_summed#.groupby(taxa_protname_summed['protname'])
+    
+    datab = dataa[dataa['kegg'].str.contains(target2)]
+    
+    datac = datab.groupby("stn").agg(
+        lat = pd.NamedAgg(column="lat", aggfunc="min"),
+        lon = pd.NamedAgg(column="lon", aggfunc="min"),
+        summed = pd.NamedAgg(column="sum", aggfunc="sum"),
+        station = pd.NamedAgg(column="stn", aggfunc="min"),
+        param_group = pd.NamedAgg(column="kegg", aggfunc="sum")
+    )
+    
+    datagroupa = datac.groupby('station')
+    
+    
+    fig = plt.figure()
+    
+    fig.patch.set_facecolor('black')
+    ax = plt.subplot()
+    #ax.patch.set_alpha(0.0)
+    ax.patch.set_facecolor('black')
+    
+    for n, k in enumerate(datagroup1.groups.keys()):
+        datagroup2 = datagroup1.get_group(k)
+        datagroupb = datagroupa.get_group(k)
+    
+    
+        c = ax.scatter(datagroupb['summed'],datagroup2['summed'],c = datagroup2.lat, clim = (-67,60), s = 60, alpha = 1, cmap = 'GnBu', edgecolor = 'white')
+    
+    
+    cbar = plt.colorbar(c)
+    cbar.ax.tick_params(which='both', color='white', labelcolor='white')
+    cbar.ax.set_ylabel('Latitude (˚N)', color = 'white')
+    ax.grid()
+    ax.ticklabel_format(scilimits=(0,0), axis = 'both')
+    #ax.set_xlim(-0.5,100)
+    #ax.loglog()
+    ax.set_ylabel('$F_{protein 2}$', color = 'palegreen', size = 10)
+    ax.set_xlabel('$F_{protein 1}$',color = 'palegreen', size = 10)
+    ax.spines['top'].set_color("palegreen")
+    ax.spines['bottom'].set_color("palegreen")
+    ax.spines['left'].set_color("palegreen")
+    ax.spines['right'].set_color("palegreen")
+    ax.tick_params(axis='y', colors="palegreen", labelsize = 10)
+    ax.tick_params(axis='x', colors="palegreen", labelsize =10)
+    
+    fig.savefig('comps.svg', format="svg", bbox_inches = "tight")
+    #st.pdf('comps.pdf', height = 'stretch')
+    
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        
+        st.image('comps.svg', width = 'stretch',output_format="PNG")
+    
+    with col2:
+        st.markdown('This plot compares the fractional abundance of two proteins in the '+str(sizefract)+' size fraction. The latitude of each associated station is indicated by the marker shading.')
