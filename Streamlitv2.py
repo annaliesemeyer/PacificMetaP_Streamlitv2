@@ -298,7 +298,7 @@ Acid Phosphatase	| Acid phosphatase
 
 st.markdown('## Functional Distribution')
 
-options = st..radio('Search:',['KEGG Ortholog', 'Protein Name'],index = 0)
+options = st.radio('Search:',['KEGG Ortholog', 'Protein Name'],index = 0)
 
 if options == 'Protein Name':
     protselect = st.selectbox('Select a protein or enter your own:',['fecA', 'cobW','irpA','metE','metH','ureC','urtA','ftsH','btuB'],accept_new_options=True, index = 0)
