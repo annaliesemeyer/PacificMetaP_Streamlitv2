@@ -92,14 +92,13 @@ def picksize(sizef):
         taxa_species_summed = taxa_species_summedall[taxa_species_summedall['stn'].isin(stn_vals)]
         taxa_kegg_summed = taxa_kegg_summedall[taxa_kegg_summedall['stn'].isin(stn_vals)]
         taxa_protname_summed = taxa_protname_summedall[taxa_[protname_summedall['stn'].isin(stn_vals)]
-
     
     if sizef =='3–51 µm':
         stn = pd.read_csv('GP15-17-OCE_stns3.txt', sep='\t', encoding='latin-1')
         stn3 = pd.read_csv('stnlabel_to_ID_3.txt', sep='\t', encoding='latin-1')
         stn_ID = stn3['Stn ID'].astype(str)
         stn_ID = np.array(stn_ID)
-        stn_keys=[3,4,5,6,8,9,10,12,14,15,16,18,18.3,19,21,23,25,27,29,31,33,35,37,39,1,3,6,8,10,12,14,16,18,20,22,25,27,32,33,35,37,38]
+	stn_keys =[3,4,5,6,8,9,10,12,14,15,16,18,18.3,19,21,23,25,27,29,31,33,35,37,39,1,3,6,8,10,12,14,16,18,20,22,25,27,32,33,35,37,38]
         stn_vals = ['GP15_3_3','GP15_3_4','GP15_3_5','GP15_3_6','GP15_3_8','GP15_3_9','GP15_3_10','GP15_3_12','GP15_3_14','GP15_3_15','GP15_3_16','GP15_3_18','GP15_3_18-3','GP15_3_19','GP15_3_21','GP15_3_23','GP15_3_25','GP15_3_27','GP15_3_29','GP15_3_31','GP15_3_33','GP15_3_35','GP15_3_37','GP15_3_39','GP17-OCE_3_1','GP17-OCE_3_3','GP17-OCE_3_6','GP17-OCE_3_8','GP17-OCE_3_10','GP17-OCE_3_12','GP17-OCE_3_14','GP17-OCE_3_16','GP17-OCE_3_18','GP17-OCE_3_20','GP17-OCE_3_22','GP17-OCE_3_25','GP17-OCE_3_27','GP17-OCE_3_32','GP17-OCE_3_33','GP17-OCE_3_35','GP17-OCE_3_37','GP17-OCE_3_38']
         stn_dict3 = dict(zip(stn_keys, stn_vals))
         taxa_domain_summed = taxa_domain_summedall[taxa_domain_summedall['stn'].isin(stn_vals)]
