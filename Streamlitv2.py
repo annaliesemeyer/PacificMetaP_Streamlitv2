@@ -150,7 +150,7 @@ if optiontax =='Species':
 
 df = pd.DataFrame(data)
 df['divsum']=df['sum']/1.70465E+12
-df_sort = df.sort_values('duvsum')
+df_sort = df.sort_values('divsum')
 
 # Create stacked bar plot
 fig = px.bar(df, x='stn', y='divsum', color='clade', barmode='stack',template="plotly_white", width=1500, height=800,labels = {'stn':'Station','divsum':'Fractional Sum', 'clade':'Clade'}) #, color_discrete_map= clade4_dict
