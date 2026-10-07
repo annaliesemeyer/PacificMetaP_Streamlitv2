@@ -1,0 +1,42 @@
+﻿Protein Name,Function,Nutrient
+FecA,Fe(III) dicitrate transport protein,Fe
+FecB,Fe complex transport system SBP,Fe
+FutA1/AfuA,Fe(III) transport system SBP,Fe
+IrpA/IcmP,Putative Fe regulated protein,Fe
+Ftn,Ferritin - Fe storage protein,Fe
+IsiB/NifF/FldA,Flavodoxin - electron transport protein,Fe
+EfeO,Fe uptake system component,Fe
+EfeU,High affinity Fe transporter,Fe
+Acr,Fe complex outer membrane receptor,Fe
+Sir,Ferredoxin-sulfite reductase,Fe
+"Ho1, PbsA1, HmuO",Heme oxygenase,Fe
+Fiu,Catecholate siderophore receptor,Fe
+SfuA,Fe(III) transport system SBP,Fe
+BhuR/HemR/TbpA,Hemoglobin/transferrin/lactoferrin receptor,Fe
+FtsH,Cell division metalloprotease,Zn
+lraI,Zn/Mn transport system SBP,Zn
+COG0523 Cluster 1,Putative Zn chaperone,Zn
+ZnuA,Zn transport system SBP,Zn
+ZnuD,Zn transport system ATP-binding protein,Zn
+NrdJ,"Ribonucleotide reductase, class II (B12-dependent)",B12
+NrdA/Z,"Ribonucleotide reductase, class Ia (B12-independent)",B12
+NrdB,"Ribonucleotide reductase, class Ia (B12-independent)",B12
+BtuB,B12 outer membrane transporter,B12
+MetH,Methionine synthase (B12-dependent),B12
+MetE,Methionine synthase (B12-independent),B12
+CUBN,B12 outer membrane receptor,B12
+CobA,B12 synthesis protein (cob(I)alamin adenosyltransferase),B12
+CobS,B12 synthesis protein (cobaltochelatase),B12
+UrtA,Urea transport system SBP,NO3
+UrtD,Urea transport system ATP-binding protein,NO3
+UrtE,Urea transport system ATP-binding protein,NO3
+UreA,Urease,NO3
+UreC,Urease,NO3
+NtrP,Nitrate/Nitrite transporter,NO3
+NtcA,Global nitrogen transcriptional regulator,NO3
+PstB,Phosphate transport system ATP-binding protein,PO4
+PstS,Phosphate transport system SBP,PO4
+PhnD,Phosphonate transport system SBP,PO4
+SqdB,Sulfolipid synthesis protein,PO4
+PTC1,Protein phosphatase,PO4
+Acid Phosphatase,Acid phosphatase,PO4

@@ -1,0 +1,1 @@
+Streamlit app for investigation of the GEOTRACES GP15 and GP17-OCE surface metaproteomics dataset. These data are not yet published and are not to be used outside of this app without the explicit written permission of Annaliese Meyer and Mak Saito. This app is solely for use in educational settings. 

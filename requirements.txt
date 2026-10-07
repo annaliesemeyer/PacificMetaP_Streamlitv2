@@ -1,0 +1,15 @@
+matplotlib
+numpy
+pandas
+statsmodels 
+seaborn
+IPython.utils
+adjustText
+scikit-learn
+plotly
+plotly.express
+umap-learn
+IPython.utils
+streamlit[pdf]
+s3fs
+st-files-connection
